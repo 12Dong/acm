@@ -1,0 +1,1 @@
+1160.exe<test.in>test.out
