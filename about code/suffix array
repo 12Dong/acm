@@ -1,0 +1,270 @@
+/*
+ *  suffix array
+ *  倍增算法 O(n*logn)
+ *  待排序数组长度为n,放在0~n-1中,在最后面补一个0
+ *  da(str, sa, rank, height, n, m);
+ *  例如:
+ *  n = 8;
+ *  num[] = { 1, 1, 2, 1, 1, 1, 1, 2, $ };      注意num最后一位为0,其他大于0
+ *  rank[] = { 4, 6, 8, 1, 2, 3, 5, 7, 0 };     rank[0~n-1]为有效值,rank[n]必定为0无效值
+ *  sa[] = { 8, 3, 4, 5, 0, 6, 1, 7, 2 };       sa[1~n]为有效值,sa[0]必定为n是无效值
+ *  height[]= { 0, 0, 3, 2, 3, 1, 2, 0, 1 };    height[2~n]为有效值
+ *  稍微改动可以求最长公共前缀，需要注意两串起始位置相同的情况
+ *  另外需要注意的是部分数组需要开两倍空间大小
+ */
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<string>
+#define F(x) ((x) / 3 + ((x) % 3 == 1 ? 0 : tb))
+#define G(x) ((x) < tb ? (x) * 3 + 1 : ((x) - tb) * 3 + 2)
+using namespace std;
+const int MAXN = 1e6+5;
+int wa[MAXN], wb[MAXN], ww[MAXN], wv[MAXN];
+int sa[3*MAXN];
+int t1[MAXN];
+int t2[MAXN];
+int c[MAXN];    //  求SA数组需要的中间变量,不需要赋值
+int _rank[MAXN];
+int height[MAXN];
+int num[MAXN];
+int a[MAXN];
+char str[MAXN];
+//  待排序的字符串放在s数组中,从s[0]到s[n-1],长度为n,且最大值小于m,
+//  除s[n-1]外的所有s[i]都大于0,r[n-1]=0
+//  函数结束以后结果放在sa数组中
+bool cmp(int *r, int a, int b, int l)
+{
+    return r[a] == r[b] && r[a + l] == r[b + l];
+}
+//da算法 时间复杂度为O(nlogn)  
+void da(int str[], int sa[], int rank[], int height[], int n, int m)
+{
+    n++;
+    int i, j, p, *x = t1, *y = t2;  //  第一轮基数排序,如果s的最大值很大,可改为快速排序
+    for (i = 0; i < m; i++)
+    {
+        c[i] = 0;
+    }
+    for (i = 0; i < n; i++)
+    {
+        c[x[i] = str[i]]++;
+    }
+    for (i = 1; i < m; i++)
+    {
+        c[i] += c[i-1];
+    }
+    for (i = n - 1; i >= 0; i--)
+    {
+        sa[--c[x[i]]] = i;
+    }
+    for (j = 1; j <= n; j <<= 1)
+    {
+        p = 0;
+        //  直接利用sa数组排序第二关键字
+        for (i = n - j; i < n; i++)
+        {
+            y[p++] = i;                 //  后面的j个数第二关键字为空的最小
+        }
+        for (i = 0; i < n; i++)
+        {
+            if (sa[i] >= j)
+            {
+                y[p++] = sa[i] - j;     //  这样数组y保存的就是按照第二关键字排序的结果
+            }
+        }
+        //  基数排序第一关键字
+        for (i = 0; i < m; i++)
+        {
+            c[i] = 0;
+        }
+        for (i = 0; i < n; i++)
+        {
+            c[x[y[i]]]++;
+        }
+        for (i = 1; i < m; i++)
+        {
+            c[i] += c[i - 1];
+        }
+        for (i = n - 1; i >= 0; i--)
+        {
+            sa[--c[x[y[i]]]] = y[i];    //  根据sa和x数组计算新的x数组
+        }
+        swap(x, y);
+        p = 1;
+        x[sa[0]] = 0;
+        for (i = 1; i < n; i++)
+        {
+            x[sa[i]] = cmp(y, sa[i - 1], sa[i], j) ? p - 1 : p++;
+        }
+        if (p >= n)
+        {
+            break;
+        }
+        m = p;                          //  下次基数排序的最大值
+    }
+    int k = 0;
+    n--;
+    for (i = 0; i <= n; i++)
+    {
+        rank[sa[i]] = i;
+    }
+    for (i = 0; i < n; i++)
+    {
+        if (k)
+        {
+            k--;
+        }
+        j = sa[rank[i] - 1];
+        while (str[i + k] == str[j + k])
+        {
+            k++;
+        }
+        height[rank[i]] = k;
+    }
+}
+//dc3 复杂度为O(n) 空间复杂度 要打三倍 
+int c0(int *r, int a, int b) {
+    return r[a] == r[b] && r[a + 1] == r[b + 1] && r[a + 2] == r[b + 2];
+}
+
+int c12(int k, int *r, int a, int b) {
+    if (k == 2)
+        return r[a] < r[b] || r[a] == r[b] && c12(1, r, a + 1, b + 1);
+    return r[a] < r[b] || r[a] == r[b] && wv[a + 1] < wv[b + 1];
+}
+
+void sort(int *r, int *a, int *b, int n, int m) {
+    for (int i = 0; i < n; i++) wv[i] = r[a[i]];
+    for (int i = 0; i < m; i++) ww[i] = 0;
+    for (int i = 0; i < n; i++) ww[wv[i]]++;
+    for (int i = 1; i < m; i++) ww[i] += ww[i - 1];
+    for (int i = n - 1; i >= 0; i--) b[--ww[wv[i]]] = a[i];
+}
+
+void dc3(int *r, int *sa, int n, int m) {
+    int i, j, *rn = r + n, *san = sa + n, ta = 0, tb = (n + 1) / 3, tbc = 0, p;
+    r[n] = r[n + 1] = 0;
+    for (i = 0; i < n; i++) if (i % 3 != 0) wa[tbc++] = i;
+    sort(r + 2, wa, wb, tbc, m);
+    sort(r + 1, wb, wa, tbc, m);
+    sort(r, wa, wb, tbc, m);
+    for (p = 1, rn[F(wb[0])] = 0, i = 1; i < tbc; i++)
+        rn[F(wb[i])] = c0(r, wb[i - 1], wb[i]) ? p - 1 : p++;
+    if (p < tbc) dc3(rn, san, tbc, p);
+    else for (i = 0; i < tbc; i++) san[rn[i]] = i;
+    for (i = 0; i < tbc; i++) if (san[i] < tb) wb[ta++] = san[i] * 3;
+    if (n % 3 == 1) wb[ta++] = n - 1;
+    sort(r, wb, wa, ta, m);
+    for (i = 0; i < tbc; i++) wv[wb[i] = G(san[i])] = i;
+    for (i = 0, j = 0, p = 0; i < ta && j < tbc; p++)
+        sa[p] = c12(wb[j] % 3, r, wa[i], wb[j]) ? wa[i++] : wb[j++];
+    for (; i < ta; p++) sa[p] = wa[i++];
+    for (; j < tbc; p++) sa[p] = wb[j++];
+}
+
+void calheight(int *r, int *sa, int n) {
+    int i, j, k = 0;
+    for (i = 1; i <= n; i++) _rank[sa[i]] = i;
+    for (i = 0; i < n; height[_rank[i++]] = k)
+        for (k ? k-- : 0, j = sa[_rank[i] - 1]; r[i + k] == r[j + k]; k++);
+}
+
+//计算不重叠 最多出现字符串长度 判定 
+//bool judge(int x,int n)
+//{
+//	int sp,bp;
+//	sp=bp=sa[0];
+//	for(int i=0;i<n;i++)
+//	{
+//		if(height[i]<x) sp=bp=sa[i];
+//		else 
+//		{
+//			sp=max(sp,sa[i]);
+//			bp=min(bp,sa[i]);
+//		}
+//		if(sp-bp>=x) return true;
+//	}
+//	return false;
+//}
+//计算重叠 且 重叠k次 最多出现字符串长度 判定 
+//int n,k;
+//bool judge(int x,int n)
+//{
+//	int cnt=0;
+//	for(int i=0;i<n;i++)
+//	{
+//		if(height[i]>=x)
+//		{
+//			cnt++;
+//		}
+//		else
+//		{
+//			cnt=1;
+//		}
+//		if(cnt>=k) return true;
+//	}
+//	return false;
+//}
+//计算一个字符串中不重复的子串个数
+//void sovle()
+//{
+//	int Max=0;
+//	int len=strlen(str);
+//	for(int i=0;i<len;i++)
+//	{
+//		num[i]=int(str[i]);
+//		Max=max(Max,num[i]);
+//	}
+//	num[len]=0;
+//	da(num,sa,_rank,height,len,Max+1);
+////	for(int i=0;i<=len+1;i++)
+////	{
+////		cout << " i " << i << "  sa[i] " << sa[i] << "  height[i] " << height[i] << "   " << len-sa[i]+1-height[i]<< endl;
+////	}
+//	int ans=0;
+//	for(int i=1;i<=len;i++)
+//	{
+//		ans+=(len-sa[i]-height[i]);
+//	}
+//	printf("%d\n",ans);
+// } 
+//计算一个字符串由某一个字符串重复r次组成 求 r的最大值 poj2406 这道题用倍增法超时 复杂度为 O(nlogn) 数据规模为 1e6 时间3s 
+int prefix[MAXN];//以sa序 最长公共前缀 
+void solve()
+{
+	int len=strlen(str);
+	int Max=0;
+	for(int i=0;i<len;i++)
+	{
+		num[i]=int(str[i]);
+		Max=max(num[i],Max);
+	}
+	num[len]=0;
+//	da(num,sa,_rank,height,len,Max+1); 
+	dc3(num,sa,len+1,Max+1); //len+1
+	calheight(num,sa,len); 
+	int st=_rank[0];
+	prefix[st]=100000;
+	for(int i=st+1;i<=len;i++) prefix[i]=min(height[i],prefix[i-1]);
+	for(int i=st-1;i>=0;i--) prefix[i]=min(height[i],prefix[i+1]);
+	//枚举重复子串长度
+	int ans=len;
+	for(int k=1;k<=len;k++)
+	{
+		if(len%k!=0) continue;
+		if(_rank[0]!=_rank[k]+1) continue;
+		if(height[_rank[0]]!=len-k) continue;
+		ans=k;
+		break;
+	 } 
+	printf("%d\n",len/ans);
+ } 
+int main()
+{
+	while(~scanf("%s",str))
+	{
+		if(str[0]=='.') break;
+		solve();
+	}
+ } 
