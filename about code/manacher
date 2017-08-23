@@ -1,0 +1,51 @@
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+using namespace std;
+const int MAXN = 1e6+5;
+char str[MAXN];
+int mp[MAXN*2];
+char ma[MAXN*2];
+int t=1;
+void manacher(int n)
+{
+	int l;
+	ma[l++]='$';
+	ma[l++]='#';
+	for(int i=0;i<n;i++)
+	{
+		ma[l++]=str[i];
+		ma[l++]='#';
+	}
+	int id=0;
+	int Max=0;
+	for(int i=0;i<l;i++)
+	{
+		mp[i]=(Max>i?min(mp[2*id-i],Max-i):1);
+		while(ma[i+mp[i]]==ma[i-mp[i]]) mp[i]++;
+		if(i+mp[i]>Max)
+		{
+			Max=i+mp[i];
+			id=i;
+		}
+	}
+	int ans=0;
+	for(int i=0;i<l;i++)
+	{
+		ans=max(ans,mp[i]-1);
+	}
+	printf("Case %d: %d\n",t++,ans);
+}
+void solve()
+{
+	int n=strlen(str);
+	manacher(n);
+}
+int main()
+{
+	 while(~scanf("%s",str))
+	 {
+	 	if(str[0]=='E') break;
+	 	solve();
+	 }
+}
