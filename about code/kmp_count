@@ -99,6 +99,18 @@ int KMP_find(char x[], int n, char y[], int m,int k)//k起始位置
     }
     return -1;
 }
+void KMP_repetend(char y[],int m)
+{  // 找到每个字符串的循环节 以及循环次数
+		KMP_Pre(y,m,Next);
+		for(int i=2;i<=m;i++)
+		{
+			int len=i-Next[i];
+			if(i!=len && i%len==0)
+			{
+				printf("%d %d\n",i,i/len);
+			 } 
+		}
+}
 int main()
 {
 	int t;
