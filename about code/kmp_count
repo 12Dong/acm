@@ -8,8 +8,8 @@
 #include<cstdio>
 using namespace std;
 const int MAXN = 1e6+5;
-char x[MAXN];
-char y[MAXN];
+char x[MAXN]; //主串
+char y[MAXN]; //模式串
 int Next[MAXN];
 void preKMP(char x[], int m, int kmpNext[])
 {
