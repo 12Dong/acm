@@ -11,6 +11,27 @@ const int MAXN = 1e6+5;
 char x[MAXN]; //主串
 char y[MAXN]; //模式串
 int Next[MAXN];
+
+/*
+ * next[]的含义，x[i - next[i]...i - 1] = x[0...next[i] - 1]
+ * next[i]为满足x[i - z...i - 1] = x[0...z - 1]的最大z值（就是x的自身匹配）
+ */
+
+void KMP_Pre(char x[], int m, int next[])
+{
+    int i, j;
+    j = next[0] = -1;
+    i = 0;
+    while (i < m)
+    {
+        while (-1 != j && x[i] != x[j])
+        {
+            j = next[j];
+        }
+        next[++i] = ++j;
+    }
+    return ;
+}
 void preKMP(char x[], int m, int kmpNext[])
 {
     int i, j;
