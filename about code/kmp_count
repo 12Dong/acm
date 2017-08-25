@@ -56,6 +56,28 @@ int KMP_Count(char x[], int n, char y[], int m)
     }
     return ans;
 }
+int KMP_find(char x[], int n, char y[], int m,int k)//k起始位置 
+{
+	//x模板串  y 主串 返回在主串中第一次，出现模式串的尾位置 返回-1 没找到 
+    int i, j;
+    int ans = 0;
+//    preKMP(x, n, Next);
+    i = k , j=0;
+    while (i < m)
+    {
+        while (-1 != j && y[i] != x[j])
+        {
+            j = Next[j];
+        }
+        i++, j++;
+        if (j == n)
+        {
+            return i;
+            j = Next[j];
+        }
+    }
+    return -1;
+}
 int main()
 {
 	int t;
