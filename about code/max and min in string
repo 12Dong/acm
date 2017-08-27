@@ -43,10 +43,10 @@ int GetMin(char s[],int n)
 	}
 	return min(i,j);
  } 
-int GetMax(char s[],int n) // Í¬¹¹Ñ­»·´®Çó×î´ó 
+int GetMax(char s[],int n) // 同构循环串求最大
 {
 	
-	//·µ»Ø×ÖµäÐò×îÐ¡µÄÏÂ±ê 
+	//返回字典序最小的下标 
 	int i=0,j=1;
 	while(i<n && j<n)
 	{
