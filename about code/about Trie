@@ -1,72 +1,96 @@
 #include<iostream>
-#include<cstdio>
 #include<cstring>
+#include<cstdio>
 using namespace std;
-const int Maxn =26;
+const int Maxn=26;
+char str[4010];
+char output[4010];
+char search[4010];
 struct Trie
 {
 	Trie *Next[Maxn];
-	int flag;
+	int end;
+	char str[15];
 	Trie()
 	{
-		flag=1;
+		end=0;
 		memset(Next,NULL,sizeof(Next));
+		memset(str,'\0',sizeof(str));
 	}
 }*root;
-void insert(char *str)
+void insert(char *str,char *realstr)
 {
-	int len =strlen(str);
-	Trie *p = root,*q;
+	int len = strlen(str);
+	Trie *p=root,*q;
 	for(int i=0;i<len;i++)
 	{
 		int id = str[i]-'a';
-		if(p->Next[id] == NULL)
+		if(p->Next[id]==NULL)
 		{
-			q=new Trie();
-			p->Next[id] = q;
-			p = p->Next[id];
+			q = new Trie();
+			p->Next[id]=q;
 		}
-		else
-		{
-			p = p->Next[id];
-			++(p->flag);
-		}
+		p = p->Next[id];
 	}
+	p->end ++ ;
+	strcpy(p->str,realstr);
 }
-int query(char *str)
+char* query(char *str)
 {
-	int len = strlen(str);
+	int len=strlen(str);
 	Trie *p = root;
 	for(int i=0;i<len;i++)
 	{
-		int id= str[i]-'a';
+		int id = str[i]-'a';
+		if(p->Next[id]==NULL) return NULL;
 		p = p->Next[id];
-		if(p==NULL) return 0;
 	}
-	return p->flag;
+	return (p->end?p->str:NULL);
 }
 void Free(Trie *T)
 {
-	if(T==NULL) return ;
-	for(int i=0;i<Maxn;i++)
+	for(int i=0;i<26;i++)
 	{
-		if(T->Next[i]) Free(T->Next[i]);
+		if(T->Next[i]!=NULL) Free(T->Next[i]);
 	}
 	delete(T);
 }
 int main()
 {
-	char str[15];
 	root = new Trie();
-	while(gets(str)&& str[0]!='\0')
+	char nouse[400];
+	char realstr[400],marstr[400];
+	scanf("%s",nouse);
+	while(scanf("%s",realstr) && strcmp(realstr,"END")!=0)
 	{
-		insert(str);
+		scanf("%s",marstr);
+		insert(marstr,realstr);
 	}
-	while(~scanf("%s",str))
+	scanf("%s",nouse);
+	getchar();
+	while(gets(str) && strcmp(str,"END")!=0)
 	{
-		printf("%d\n",query(str));
+		int len = strlen(str);
+		int l=0;
+		memset(output,0,sizeof(output));
+		for(int i=0;i<len;i++)
+		{
+			if(str[i]>='a' && str[i]<='z')
+			{
+				search[l++]=str[i];
+			}
+			else
+			{
+				search[l++]='\0';
+				l=0;
+				char * tar = query(search);
+				if(tar==NULL) strcat(output,search);
+				else strcat(output,tar);
+				output[strlen(output)]=str[i];
+			}
+		}
+		printf("%s\n",output);
 	}
 	Free(root);
+	return 0;
 }
-
-
