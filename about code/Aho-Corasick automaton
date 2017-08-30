@@ -1,0 +1,124 @@
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+using namespace std;
+const int MAXN = 1e6+5;
+const int Maxn = 26;
+char str[MAXN],keyword[55];
+int head,tail;
+struct Trie
+{
+	Trie *fail;
+	Trie *Next[Maxn];
+	int count;
+	Trie()
+	{
+		fail = NULL;
+		count = 0;
+		memset(Next,NULL,sizeof(Next));
+	}
+}*q[500010];
+Trie *root;
+void insert(char *str)
+{
+	Trie *p=root,*q;
+	int len=strlen(str);
+	for(int i=0;i<len;i++)
+	{
+		int id = str[i]-'a';
+		if(p->Next[id]==NULL)
+		{
+			q = new Trie();
+			p->Next[id] = q;
+		}
+		p = p->Next[id];
+	}
+	p->count++;
+}
+
+void build_ac()
+{
+	q[tail++] = root;
+	while(head!=tail)
+	{
+		Trie *p = q[head++];
+		Trie *temp = NULL;
+		for(int i=0;i<Maxn;i++)
+		{
+			if(p->Next[i]!=NULL) 
+			{
+				if(p == root) //µÚÒ»¸öÔªËØ±Ø¶¨Ö¸Ïò¸ù 
+				{
+					p->Next[i]->fail =root;
+				}
+				else
+				{
+					temp = p->fail;
+					while(temp!=NULL)
+					{
+						if(temp->Next[i]!=NULL) // ÕÒµ½Æ¥Åä 
+						{
+							p->Next[i]->fail = temp->Next[i];
+							break;
+						}
+						temp = temp->fail;
+					}
+					if(temp == NULL)
+					{
+						p->Next[i]->fail = root;
+					}
+				}
+				q[tail++] = p->Next[i];
+				
+			}
+		}
+	}
+}
+int query()
+{
+	int len,result=0;
+	Trie *p=root;
+	len = strlen(str);
+	for(int i=0;i<len;i++)
+	{
+		int id = str[i] - 'a';
+		while(p->Next[id]==NULL && p!=root)
+		{
+			p = p->fail;
+		}
+		p = p->Next[id];
+		if(p ==NULL)
+		{
+			p = root;
+		}
+		Trie *temp= p;
+		while(temp!=root && temp->count!=-1)
+		{
+			result +=temp->count;
+			temp ->count= -1;
+			temp =temp->fail;
+		}
+	}
+	return result;
+}
+int main()
+{
+	int t;
+	scanf("%d",&t);
+	while(t--)
+	{
+		head = tail = 0;
+		root=new Trie();
+		int n;
+		scanf("%d",&n);
+		for(int i=0;i<n;i++)
+		{
+			scanf("%s",keyword);
+			insert(keyword);
+		}
+		build_ac();
+		scanf("%s",str);
+		printf("%d\n",query());
+	}
+	return 0;
+}
