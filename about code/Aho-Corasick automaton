@@ -47,7 +47,7 @@ void build_ac()
 		{
 			if(p->Next[i]!=NULL) 
 			{
-				if(p == root) //µÚÒ»¸öÔªËØ±Ø¶¨Ö¸Ïò¸ù 
+				if(p == root)//第一个元素必定指向根 
 				{
 					p->Next[i]->fail =root;
 				}
@@ -56,7 +56,7 @@ void build_ac()
 					temp = p->fail;
 					while(temp!=NULL)
 					{
-						if(temp->Next[i]!=NULL) // ÕÒµ½Æ¥Åä 
+						if(temp->Next[i]!=NULL //成功匹配
 						{
 							p->Next[i]->fail = temp->Next[i];
 							break;
