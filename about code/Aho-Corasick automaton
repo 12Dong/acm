@@ -17,7 +17,8 @@ struct Trie
 		count = 0;
 		memset(Next,NULL,sizeof(Next));
 	}
-}*q[500010];
+//}*q[500010];
+};
 Trie *root;
 void insert(char *str)
 {
@@ -74,6 +75,40 @@ void build_ac()
 		}
 	}
 }
+void build_ac()  
+{  
+    Trie *p=root,*now,*q;  
+    queue <Trie *>que;  
+    que.push(p);  
+    while(!que.empty())  
+    {  
+        now=que.front();  
+        que.pop();  
+        for(int i=0; i<128; i++)  
+        {  
+            q=now->Next[i];  
+            if(q!=NULL)  
+            {  
+                if(now==root) q->fail=root;  
+                else  
+                {  
+                    p=now->fail;  
+                    while(p)  
+                    {  
+                        if(p->Next[i])  
+                        {  
+                            q->fail=p->Next[i];  
+                            break;  
+                        }  
+                        p=p->fail;  
+                    }  
+                    if(!p) q->fail=root;  
+                }  
+                que.push(q);  
+            }  
+        }  
+    }  
+}  
 int query()
 {
 	int len,result=0;
