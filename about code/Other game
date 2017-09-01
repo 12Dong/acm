@@ -1,0 +1,24 @@
+另类博弈
+//分治思想
+题意：两人对两个数进行加减，大数减去小数的若干倍，谁先得到一个零谁获胜
+#include<iostream>
+using namespace std;
+int main()
+{
+	int a,b;
+	while(cin >> a>> b)
+	{
+		if(a==0 && b==0) break;
+		bool flag=true;
+		for(;;)
+		{
+			if(a>b) swap(a,b);
+			if(b%a==0) break;
+			if(b-a>a) break;
+			flag=!flag;
+			b-=a;
+		}
+		if(flag) cout << "Stan wins" << endl;
+		else cout << "Ollie wins" << endl;
+	}
+}
