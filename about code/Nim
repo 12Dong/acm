@@ -1,0 +1,32 @@
+Nim博弈
+题意 两人n堆，取任意一堆中任意数量，取完者胜，问第一次取必胜，有多少种取法
+#include<iostream>
+using namespace std;
+int main()
+{
+	int n,ans,cnt;
+	int a[110];
+	while(cin >> n && n)
+	{
+		ans=cnt=0;
+		for(int i=0;i<n;i++)
+		{
+			cin >> a[i];
+			ans^=a[i];
+		}
+		if(ans==0) //奇异局势必输
+		{
+			cout << 0 << endl;
+		 } 
+		else
+		{
+			//转变奇异局势
+			for(int i=0;i<n;i++)
+			{
+				int tmp=a[i]^ans;
+				if(tmp<=a[i])	cnt++;
+			}
+			cout << cnt << endl;
+		}
+	}
+ } 
