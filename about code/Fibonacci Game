@@ -1,0 +1,24 @@
+斐波那契博弈
+题意：两人轮流从一堆中取石子，一人取n个，下一人只能取1-2*n个，取走最后石子的人获胜。
+//是斐波那契数 必败 反之 必胜
+#include<iostream>using namespace std;int main(){
+	int fib[50];
+	fib[0]=2;
+	fib[1]=3;
+	for(int i=2;i<50;i++)
+	{
+		fib[i]=fib[i-1]+fib[i-2];
+	}
+	int n;
+	while(cin >> n && n)
+	{
+		bool flag=true;
+		for(int i=0;i<50;i++)
+		{
+			if(fib[i]==n) flag=false;
+			if(fib[i]>n) break;
+		}
+		if(!flag) cout << "Second win"<<endl;
+		else cout << "First win"<< endl;
+	}
+}
