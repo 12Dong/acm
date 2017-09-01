@@ -1,0 +1,57 @@
+题意：一人从x出发速度为m，一人从y出发速度为n，模l，问时间重合。
+计算机本身对%的不友好
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+using namespace std; 
+typedef long long ll;
+ll ex_gcd(ll a,ll b,ll &x,ll &y)
+{
+//	cout << a << "   " << b << endl;
+	if(b==0)
+	{
+		x=1;
+		y=0;
+		return a;
+	}
+	else
+	{
+		ll r=ex_gcd(b,a%b,x,y);
+		ll tmp=x;
+		x=y;
+		y=tmp-a/b*y;
+		return r;		
+	}
+}
+int main()
+{
+	ll x,y,m,n,l,t,T;
+	while(~scanf("%lld%lld%lld%lld%lld",&x,&y,&m,&n,&l))
+	{
+		ll r;
+		ll d;
+/*****************/
+		if(m-n<0)
+		{
+			r=ex_gcd(n-m,l,t,T);
+			d=x-y;
+		}
+		else
+		{
+			r=ex_gcd(m-n,l,t,T);
+		 } 
+		
+		
+		if(d%r!=0)
+		{
+			printf("Impossible\n");	
+		}	
+		else
+		{
+			ll times=(d/r);
+			t*=times;
+			ll addition=l/r;
+			printf("%lld\n",(t%addition+addition)%addition);
+			}	
+	}
+ } 
