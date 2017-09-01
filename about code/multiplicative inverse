@@ -1,0 +1,51 @@
+//题意问C(n-1,m+n-2) mod 1e9+7得多少
+#include<iostream>
+using namespace std;
+typedef long long ll;
+const int MOD= 1e9+7;
+//乘法逆元辅助函数 
+ll ex_gcd(ll a,ll b,ll &x,ll &y)
+{
+	if(b==0)
+	{
+		x=1;
+		y=0;
+		return a;
+	}
+	else
+	{
+		ll r=ex_gcd(b,a%b,x,y);
+		ll tmp=x;
+		x=y;
+		y=tmp-a/b*y;
+	}
+}
+//该函数返回乘法逆元 
+ll multi_reverse(ll b,ll p)//b是除法中的除数 相当于 a/b mod p中的b p是除法中的模数 
+{
+	//x是乘法逆元 
+	ll x,y;
+	ex_gcd(b,p,x,y);
+	//处理得出最小正整数解
+	x=(x%p+p)%p;
+	return x; 
+}
+//使用注意 a / b 先取模 
+ll c(ll m,ll n)
+{
+	ll ans=1;
+	ll div=1;
+	for(ll i=n;i>n-m;i--) ans=ans*i%MOD;
+	for(ll i=m;i>=1;i--) div=div*i%MOD;
+	ll x,y;
+	x=multi_reverse(div,MOD);
+	return ans*x%MOD;
+}
+int main()
+{
+	ll n,m;
+	while(cin >> n >> m)
+	{
+		cout << c(n-1,n+m-2)<< endl;
+	}
+}
