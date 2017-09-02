@@ -1,0 +1,146 @@
+#include<iostream>
+#include<cstring>
+#include<queue>
+#include<cstdio>
+using namespace std;
+const int Maxn = 26;
+const int MAXN = 500010;
+struct Trie
+{
+	int Next[500010][Maxn],fail[500010],end[500010];
+	int root,L;
+	int newnode()
+	{
+		for(int i=0;i<26;i++)
+		{
+			Next[L][i]=-1;
+		}
+		end[L++]=0;
+		return L-1;
+	}
+	void init()
+	{
+		L=0;
+		root = newnode();
+	}
+	void insert(char buf[])
+	{
+		int len=strlen(buf);
+		int now=root;
+		for(int i=0;i<len;i++)
+		{
+			int id=buf[i]-'a';
+			if(Next[now][id]==-1)
+			{
+				Next[now][id]=newnode();
+			}
+			now = Next[now][id];
+		}
+		end[now]++;
+	}
+
+//    void insert(char buf[])
+//    {
+//        int len = (int)strlen(buf);
+//        int now = root;
+//        for (int i = 0; i < len; i++)
+//        {
+//            if (Next[now][buf[i] - 'a'] == -1)
+//            {
+//                Next[now][buf[i] - 'a'] = newnode();
+//            }
+//            now = Next[now][buf[i] - 'a'];
+//        }
+//        end[now]++;
+//    }
+	void build_ac()
+	{
+		queue<int>q;
+		fail[root]=root;
+		for(int i=0;i<26;i++)
+		{
+			if(Next[root][i]==-1)
+			{
+				Next[root][i]=root;
+			}
+			else
+			{
+				fail[Next[root][i]]=root;
+				q.push(Next[root][i]);
+			}
+		}
+			while(!q.empty())
+			{
+				int now = q.front();
+				q.pop();
+				for(int i=0;i<Maxn;i++)
+				{
+					if(Next[now][i]==-1)
+					{
+						Next[now][i]=Next[fail[now]][i];
+					}
+					else
+					{
+						fail[Next[now][i]]=Next[fail[now]][i];
+						q.push(Next[now][i]);
+					}
+				}
+			}
+
+		}
+	int query(char buf[])
+	{
+		int len=strlen(buf);
+		int now=root;
+		int res=0;
+		for(int i=0;i<len;i++)
+		{
+			int id=buf[i]-'a';
+			now =Next[now][id];
+			int temp=now;
+			while(temp!=root)
+			{
+				res+=end[temp];
+				end[temp]=0;
+				temp=fail[temp];
+			}
+		}
+		return res;			
+	}
+	void debug()
+	{
+		for(int i=0;i<L;i++)
+		{
+			printf(" id = %3d ,fail = %3d ,end = %3d, chi =[",i,fail[i],end[i]);
+			for(int j=0;j<26;j++)
+			{
+				printf("%c -> %2d   ",'a'+j,Next[i][j]);
+			}
+			printf("]\n");
+		}
+	}
+};
+
+char buf[1000010];
+Trie ac;
+int main()
+{
+	int T;
+	int n;
+	scanf("%d",&T);
+	while(T--)
+	{
+		scanf("%d",&n);
+		ac.init();
+		for(int i=0;i<n;i++)
+		{
+			scanf("%s",buf);
+			ac.insert(buf);
+		}
+		ac.build_ac();
+		ac.debug();
+//		scanf("%s",buf);
+//		printf("%d\n",ac.query(buf));
+	}
+	return 0;
+}
