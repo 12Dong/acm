@@ -1,0 +1,95 @@
+#include<iostream>
+#include<algorithm>
+#include<cstdio>
+using namespace std;
+const int MOD =1e9+7;
+struct Matrix
+{
+	long long mat[2][2],n;
+	Matrix() {}
+	Matrix(int _n)
+	{
+		n=_n;
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<n;j++)
+			{
+				mat[i][j]=0;
+			}
+		}
+	}
+	Matrix operator*(const Matrix &b) const
+	{
+		Matrix ret =Matrix(n);
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<n;j++)
+			{
+				for(int k=0;k<n;k++)
+				{
+					ret.mat[i][j]+=(mat[i][k]*b.mat[k][j]);
+				}
+			}
+		}
+		return ret;
+	}
+	void display()
+	{
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<n;j++)
+			{
+				printf("%3d",mat[i][j]);
+			}
+			printf("\n");
+		}
+	}
+};
+Matrix Matrix_quick_multi(Matrix a,int n)
+{
+	Matrix ret = Matrix(a.n);
+	for(int i=0;i<ret.n;i++)
+	{
+		ret.mat[i][i]=1;
+	}
+	Matrix tmp=a;
+	while(n)
+	{
+		if(n&1) ret=ret*tmp;
+		tmp=tmp*tmp;
+		n>>=1;
+	}
+	return ret;
+}
+int main()
+{
+	int n;
+	while(cin >> n && n!=-1)
+	{
+//		if(n==0)
+//		{
+//			cout << 0 << endl;
+//			continue;
+//		}
+//		else if(n==1)
+//		{
+//			cout << 1 << endl;
+//			continue;
+//		}
+//		else if(n==2)
+//		{
+//			cout << 1 << endl;
+//			continue;
+//		}
+		Matrix a;
+		a.n=2;
+		a.mat[0][0]=1;
+		a.mat[0][1]=1;
+		a.mat[1][0]=1;
+		a.mat[1][1]=0;			
+		Matrix res=Matrix_quick_multi(a,n);
+		cout << res.mat[1][0]<<endl;
+//		res.display();
+//		cout << "*******************" << endl;
+	}
+}
