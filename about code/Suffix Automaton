@@ -1,0 +1,114 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+const int MAXN = 3e5+5;
+char str1[MAXN],str2[MAXN];
+struct SAM
+{
+	struct Node
+	{
+		int fa,ch[27];
+		int val;
+		void init()
+		{
+			fa = val = 0;
+			memset(ch,0,sizeof(ch));
+		}
+	}node[2*MAXN];
+	int tot;
+	int new_node()
+	{
+		node[++tot].init();
+		return tot;
+	}
+	int root,last;
+	void init()
+	{
+		tot = root = last = 1;
+		node[0].init();
+		node[1].init();
+	}
+	void add(int x)
+	{
+		int p = last;
+		int np = new_node();
+		node[np].val = node[p].val+1;
+		while(p && node[p].ch[x]==0)
+		{
+			node[p].ch[x]=np;
+			p = node[p].fa;
+		}
+		if(p==0) node[np].fa=root;
+		else
+		{
+			int q = node[p].ch[x];
+			if(node[p].val+1 == node[q].val)
+			{
+				node[np].fa = q;
+			}
+			else
+			{
+				//分割多余点 
+				int nq = new_node();
+				node[nq].val = node[p].val+1;
+				memcpy(node[nq].ch,node[q].ch,sizeof(node[q].ch));
+				node[nq].fa = node[q].fa;
+				node[q].fa = node[np].fa = nq;
+				while(p&& node[p].ch[x]==q)
+				{
+					node[p].ch[x]=nq;
+					p = node[p].fa;
+				}
+			}
+			
+		 }
+		 last = np; 
+	}
+	void GO()
+	{
+		int len1 = strlen(str1);
+		int len2 = strlen(str2);
+		init();
+		for(int i=0;i<len1;i++)
+		{
+			add(str1[i]-'a');
+		}
+		int now = root;
+		int ans = 0;
+		int temp = 0;
+		for(int i=0;i<len2;i++)
+		{
+			int id = str2[i]-'a';
+			if(node[now].ch[id])
+			{
+				temp++;
+				now = node[now].ch[id];
+			}
+			else
+			{
+				while(now && node[now].ch[id]==0)
+				{
+					now = node[now].fa;
+				}
+				if(now)
+				{
+					temp = node[now].val+1;
+					now = node[now].ch[id];
+				}
+				else
+				{
+					now = root;
+					temp = 0;
+				}
+			}
+			ans = max(ans,temp);
+		}
+		printf("%d\n",ans);
+	}
+}sam;
+int main()
+{
+	scanf("%s%s",str1,str2);
+	sam.GO();
+}
