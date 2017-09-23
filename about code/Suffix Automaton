@@ -65,6 +65,21 @@ struct SAM
 		 }
 		 last = np; 
 	}
+	void debug()
+	{
+		for(int i=1;i<=tot;i++)
+		{
+			printf("id = %d ,fa = %d, step = %d ,ch = [",i,node[i].fa,node[i].val);
+			for(int j=0;j<26;j++)
+			{
+				if(node[i].ch[j])
+				{
+					printf("%c,%d",j+'a',node[i].ch[j]);
+				}
+			}
+			puts("]");
+		}
+	}
 	void GO()
 	{
 		int len1 = strlen(str1);
