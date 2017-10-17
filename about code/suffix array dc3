@@ -1,8 +1,3 @@
-/* 使用方法
-转成int(str[i])型 
-len(str)=0;
-调用函数 dc3(num,sa,len+1,Max+1)
-*/
 #include<iostream>
 #include<cstring>
 #include<string>
@@ -10,11 +5,11 @@ len(str)=0;
 #define F(x) ((x) / 3 + ((x) % 3 == 1 ? 0 : tb))
 #define G(x) ((x) < tb ? (x) * 3 + 1 : ((x) - tb) * 3 + 2)
 using namespace std;
-const int Maxn = 1e3+5;
+const int Maxn = 50000+5;
 int wa[Maxn],wb[Maxn],ww[Maxn],wv[Maxn];
-int num[3*Maxn];
-int _rank[3*Maxn];
-int height[3*Maxn];
+int num[Maxn];
+int _rank[Maxn];
+int height[Maxn];
 int sa[3*Maxn];
 int c0(int *r, int a, int b) {
     return r[a] == r[b] && r[a + 1] == r[b + 1] && r[a + 2] == r[b + 2];
