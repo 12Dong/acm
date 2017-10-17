@@ -1,0 +1,89 @@
+/* 使用方法
+转成int(str[i])型 
+len(str)=0;
+调用函数 dc3(num,sa,len+1,Max+1)
+*/
+#include<iostream>
+#include<cstring>
+#include<string>
+#include<cmath>
+#define F(x) ((x) / 3 + ((x) % 3 == 1 ? 0 : tb))
+#define G(x) ((x) < tb ? (x) * 3 + 1 : ((x) - tb) * 3 + 2)
+using namespace std;
+const int Maxn = 1e3+5;
+int wa[Maxn],wb[Maxn],ww[Maxn],wv[Maxn];
+int num[3*Maxn];
+int _rank[3*Maxn];
+int height[3*Maxn];
+int sa[3*Maxn];
+int c0(int *r, int a, int b) {
+    return r[a] == r[b] && r[a + 1] == r[b + 1] && r[a + 2] == r[b + 2];
+}
+
+int c12(int k, int *r, int a, int b) {
+    if (k == 2)
+        return r[a] < r[b] || r[a] == r[b] && c12(1, r, a + 1, b + 1);
+    return r[a] < r[b] || r[a] == r[b] && wv[a + 1] < wv[b + 1];
+}
+
+void sort(int *r, int *a, int *b, int n, int m) {
+    for (int i = 0; i < n; i++) wv[i] = r[a[i]];
+    for (int i = 0; i < m; i++) ww[i] = 0;
+    for (int i = 0; i < n; i++) ww[wv[i]]++;
+    for (int i = 1; i < m; i++) ww[i] += ww[i - 1];
+    for (int i = n - 1; i >= 0; i--) b[--ww[wv[i]]] = a[i];
+}
+
+void dc3(int *r, int *sa, int n, int m) {
+    int i, j, *rn = r + n, *san = sa + n, ta = 0, tb = (n + 1) / 3, tbc = 0, p;
+    r[n] = r[n + 1] = 0;
+    for (i = 0; i < n; i++) if (i % 3 != 0) wa[tbc++] = i;
+    sort(r + 2, wa, wb, tbc, m);
+    sort(r + 1, wb, wa, tbc, m);
+    sort(r, wa, wb, tbc, m);
+    for (p = 1, rn[F(wb[0])] = 0, i = 1; i < tbc; i++)
+        rn[F(wb[i])] = c0(r, wb[i - 1], wb[i]) ? p - 1 : p++;
+    if (p < tbc) dc3(rn, san, tbc, p);
+    else for (i = 0; i < tbc; i++) san[rn[i]] = i;
+    for (i = 0; i < tbc; i++) if (san[i] < tb) wb[ta++] = san[i] * 3;
+    if (n % 3 == 1) wb[ta++] = n - 1;
+    sort(r, wb, wa, ta, m);
+    for (i = 0; i < tbc; i++) wv[wb[i] = G(san[i])] = i;
+    for (i = 0, j = 0, p = 0; i < ta && j < tbc; p++)
+        sa[p] = c12(wb[j] % 3, r, wa[i], wb[j]) ? wa[i++] : wb[j++];
+    for (; i < ta; p++) sa[p] = wa[i++];
+    for (; j < tbc; p++) sa[p] = wb[j++];
+}
+
+void calheight(int *r, int *sa, int n) {
+    int i, j, k = 0;
+    for (i = 1; i <= n; i++) _rank[sa[i]] = i;
+    for (i = 0; i < n; height[_rank[i++]] = k)
+        for (k ? k-- : 0, j = sa[_rank[i] - 1]; r[i + k] == r[j + k]; k++);
+}
+char str[Maxn];
+int main()
+{
+	int t;
+	scanf("%d",&t);
+	while(t--)
+	{
+		int Max=0;
+		scanf("%s",str);
+		int len = strlen(str);
+		for(int i=0;i<len;i++) num[i]=int(str[i]),Max=max(Max,num[i]);
+		num[len]=0;
+		dc3(num,sa,len+1,Max+1);
+		calheight(num,sa,len);
+//		for(int i=0;i<=len;i++) cout << sa[i] << " ";
+//		cout << endl;
+//		for(int i=0;i<=len;i++) cout << height[i]<<" ";
+//		cout << endl;
+		int output=0;
+		for(int i=1;i<=len;i++)
+		{
+			output+=len-(sa[i]+1)+1-height[i];
+		}
+		printf("%d\n",output);
+	}
+}
