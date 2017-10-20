@@ -1,0 +1,41 @@
+#include<iostream>
+using namespace std;
+typedef long long ll;
+ll phi(ll n)
+{
+	ll res = n;
+	for(ll i=2;i*i<=n;i++)
+	{
+		if(n%i==0)
+		{
+			res = res-res/i;
+			while(n%i==0) n/=i;
+		}
+	}
+	if(n>1) res = res - res/n;
+	return res;
+}
+int main()
+{
+	ll n;
+	while(~scanf("%lld",&n))
+	{
+		ll ans = 0;
+		for(ll i=1;i*i<=n;i++)
+		{
+			if(n%i==0)
+			{
+				if(i*i==n)
+				{
+					ans+=phi(n/i)*i;
+				}
+				else
+				{
+					ans+=phi(n/i)*i;
+					ans+=phi(i)*n/i;
+				}
+			}
+		}
+		printf("%lld\n",ans);
+	}
+}
